@@ -8,5 +8,6 @@ game = Game()
 
 while True:
     game.handle_events()
+    game.paddle.move()
     game.draw()
     game.clock.tick(FPS)
