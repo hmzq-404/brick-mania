@@ -1,17 +1,17 @@
+from .assets import *
 from .config import *
 import pygame
 
 
-class Paddle(pygame.sprite.Sprite):
+class Paddle:
     def __init__(self):
         super().__init__()
-        self.surf = pygame.Surface((PADDLE_WIDTH, PADDLE_HEIGHT))
+        self.surf = paddle_image
         self.rect = self.surf.get_rect(
             centerx=SCREEN_WIDTH / 2,
             y=SCREEN_HEIGHT - PADDLE_HEIGHT - 10
         )
-
-        self.surf.fill("white")
+        self.mask = pygame.mask.from_surface(self.surf)
 
     def move(self):
         keys = pygame.key.get_pressed()
@@ -25,12 +25,23 @@ class Paddle(pygame.sprite.Sprite):
                 self.rect.move_ip(-PADDLE_SPEED, 0)
 
 
-class Ball(pygame.sprite.Sprite):
+class Ball:
     def __init__(self):
         super().__init__()
+        self.surf = ball_image
+        self.rect = self.surf.get_rect(
+            centerx=SCREEN_WIDTH / 2,
+            centery=SCREEN_HEIGHT * (2/3)
+        )
+        self.mask = pygame.mask.from_surface(self.surf)
+        self.x_velocity = 0
+        self.y_velocity = MAX_VELOCITY
+
+    def move(self):
+        self.rect.move_ip(self.x_velocity, self.y_velocity)
 
 
-class Brick(pygame.sprite.Sprite):
+class Brick:
     def __init__(self):
         super().__init__()
         
