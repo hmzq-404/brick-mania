@@ -1,4 +1,5 @@
 from .config import *
+from .sprites import Paddle, Ball, BrickBreakable, BrickUnbreakable
 import sys
 import pygame
 
@@ -7,10 +8,15 @@ class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
+        self.font = pygame.font.Font("freesansbold.ttf", 20)
 
-        from .sprites import Paddle, Ball, Brick
         self.paddle = Paddle()
         self.ball = Ball()
+        self.moveables = pygame.sprite.Group(self.paddle, self.ball)
+        self.bricks = pygame.sprite.Group()
+
+        self.level_started = False
+        self.level = 1
 
         pygame.display.set_caption("Brick Mania")
 
@@ -20,16 +26,49 @@ class Game:
                 pygame.quit()
                 sys.exit()
 
+    def populate_level(self):
+        """
+        Map Format:
+        - -> Empty space
+        b -> Breakable brick
+        u -> Unbreakable brick
+        """
+        with open(f"levels/{self.level}.txt") as f:
+            bricks_map = f.readlines()
+            y = 50
+            for row in bricks_map:
+                x = 50
+                for symbol in row:
+                    if symbol == "b":
+                        self.bricks.add(BrickBreakable((x, y)))
+                    elif symbol == "u":
+                        self.bricks.add(BrickUnbreakable((x, y)))
+                    x += 101
+                y += 51
+
+
     def handle_collisions(self):
-        paddle_ball_collision = self.paddle.mask.overlap(
-            self.ball.mask,
-            (self.ball.rect.x - self.paddle.rect.x, self.ball.rect.y - self.paddle.rect.y)
-        )
-        if paddle_ball_collision:
+        # Collision with paddle
+        ball_paddle_collision = pygame.sprite.collide_rect(self.ball, self.paddle)
+        if ball_paddle_collision:
             constant_of_proportionality = (PADDLE_WIDTH / 2) / MAX_VELOCITY
             new_x_velocity = (self.ball.rect.centerx - self.paddle.rect.centerx) / constant_of_proportionality
             self.ball.x_velocity = new_x_velocity
             self.ball.y_velocity = -self.ball.y_velocity
+
+        # With bricks
+        brick_colliding = pygame.sprite.spritecollideany(self.ball, self.bricks)
+        if brick_colliding:
+            # Ball is below or above brick
+            if self.ball.rect.top >= brick_colliding.rect.bottom-5 or self.ball.rect.bottom <= brick_colliding.rect.top+5:
+                self.ball.y_velocity = -self.ball.y_velocity
+
+            # Ball is on the side of brick
+            if self.ball.rect.right <= brick_colliding.rect.left+5 or self.ball.rect.left >= brick_colliding.rect.right-5:
+                self.ball.x_velocity = -self.ball.x_velocity
+
+            if brick_colliding.__class__.__name__ == "BrickBreakable":
+                brick_colliding.kill()
 
         # With ceiling
         if self.ball.rect.top <= 0:
@@ -40,6 +79,8 @@ class Game:
             
     def draw(self):
         self.screen.fill("black")
-        self.screen.blit(self.paddle.surf, self.paddle.rect)
-        self.screen.blit(self.ball.surf, self.ball.rect)
+        self.moveables.draw(self.screen)
+        self.bricks.draw(self.screen)
+        score_text = self.font.render(f"Level: {self.level}", True, "white")
+        self.screen.blit(score_text, (10, 20))
         pygame.display.flip()

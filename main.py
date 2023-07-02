@@ -3,14 +3,17 @@ import pygame
 pygame.init()
 
 from brick_mania import Game
-from brick_mania.config import *
 
 game = Game()
 
 while True:
     game.handle_events()
-    game.paddle.move()
-    game.ball.move()
+
+    if not game.level_started:
+        game.populate_level()
+        game.level_started = True
+
+    game.moveables.update()
     game.handle_collisions()
     game.draw()
-    game.clock.tick(FPS)
+    game.clock.tick(30)
