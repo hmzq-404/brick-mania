@@ -1,6 +1,7 @@
 from .config import *
 from .sprites import Paddle, Ball, BrickBreakable, BrickUnbreakable
 import sys
+import glob
 import pygame
 
 
@@ -15,8 +16,9 @@ class Game:
         self.moveables = pygame.sprite.Group(self.paddle, self.ball)
         self.bricks = pygame.sprite.Group()
 
-        self.level_started = False
-        self.level = 1
+        self.level = 3
+        self.total_levels = len(glob.glob('levels/*.txt'))
+        self.won = False
 
         pygame.display.set_caption("Brick Mania")
 
@@ -33,6 +35,11 @@ class Game:
         b -> Breakable brick
         u -> Unbreakable brick
         """
+        self.bricks.empty()
+        self.ball.x_velocity = 0
+        self.ball.y_velocity = -MAX_VELOCITY
+        self.ball.centerx = SCREEN_WIDTH / 2,
+        self.ball.centery = SCREEN_HEIGHT * (2/3)
         with open(f"levels/{self.level}.txt") as f:
             bricks_map = f.readlines()
             y = 50
@@ -73,14 +80,24 @@ class Game:
         # With ceiling
         if self.ball.rect.top <= 0:
             self.ball.y_velocity = -self.ball.y_velocity
+        # REMOVE THISSSSSSSSSSSSSSSSSSSSSSSSSSS
+        if self.ball.rect.bottom >= SCREEN_HEIGHT:
+            self.ball.y_velocity = -self.ball.y_velocity
         # With walls
         if self.ball.rect.x <= 0 or self.ball.rect.right >= SCREEN_WIDTH:
             self.ball.x_velocity = -self.ball.x_velocity
+
+
+    def level_complete(self):
+        for brick in self.bricks:
+            if brick.__class__.__name__ == "BrickBreakable":
+                return False
+        return True
             
     def draw(self):
         self.screen.fill("black")
         self.moveables.draw(self.screen)
         self.bricks.draw(self.screen)
-        score_text = self.font.render(f"Level: {self.level}", True, "white")
+        score_text = self.font.render(f"Level: {self.level}/{self.total_levels}", True, "white")
         self.screen.blit(score_text, (10, 20))
         pygame.display.flip()
