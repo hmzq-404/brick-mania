@@ -31,7 +31,7 @@ class Ball(pygame.sprite.Sprite):
             centery=SCREEN_HEIGHT * (2/3)
         )
         self.x_velocity = 0
-        self.y_velocity = MAX_VELOCITY
+        self.y_velocity = 0
 
     def update(self):
         self.rect.move_ip(self.x_velocity, self.y_velocity)

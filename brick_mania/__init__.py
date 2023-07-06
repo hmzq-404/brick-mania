@@ -16,17 +16,31 @@ class Game:
         self.moveables = pygame.sprite.Group(self.paddle, self.ball)
         self.bricks = pygame.sprite.Group()
 
-        self.level = 3
+        self.level = 1
+        self.level_started = False
         self.total_levels = len(glob.glob('levels/*.txt'))
-        self.won = False
+        self.over = False
 
         pygame.display.set_caption("Brick Mania")
 
     def handle_events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                    pygame.quit()
+                    sys.exit()
+
+            if event.type == pygame.KEYDOWN:
+                if not self.level_started:
+                    self.ball.y_velocity = MAX_VELOCITY
+                    self.level_started = True
+
+                elif self.over:
+                    self.level = 1
+                    self.level_started = False
+                    self.reset_sprites()
+                    self.populate_level()
+                    self.over = False
+            
 
     def populate_level(self):
         """
@@ -35,11 +49,6 @@ class Game:
         b -> Breakable brick
         u -> Unbreakable brick
         """
-        self.bricks.empty()
-        self.ball.x_velocity = 0
-        self.ball.y_velocity = -MAX_VELOCITY
-        self.ball.centerx = SCREEN_WIDTH / 2,
-        self.ball.centery = SCREEN_HEIGHT * (2/3)
         with open(f"levels/{self.level}.txt") as f:
             bricks_map = f.readlines()
             y = 50
@@ -80,9 +89,6 @@ class Game:
         # With ceiling
         if self.ball.rect.top <= 0:
             self.ball.y_velocity = -self.ball.y_velocity
-        # REMOVE THISSSSSSSSSSSSSSSSSSSSSSSSSSS
-        if self.ball.rect.bottom >= SCREEN_HEIGHT:
-            self.ball.y_velocity = -self.ball.y_velocity
         # With walls
         if self.ball.rect.x <= 0 or self.ball.rect.right >= SCREEN_WIDTH:
             self.ball.x_velocity = -self.ball.x_velocity
@@ -98,6 +104,20 @@ class Game:
         self.screen.fill("black")
         self.moveables.draw(self.screen)
         self.bricks.draw(self.screen)
-        score_text = self.font.render(f"Level: {self.level}/{self.total_levels}", True, "white")
-        self.screen.blit(score_text, (10, 20))
+
+        score_text = f"Level: {self.level}/{self.total_levels}"
+        if not self.level_started:
+            score_text += "             Use the right and left arrow keys to move."
+        if self.over:
+            score_text += "             Press any key to play again."
+        self.screen.blit(self.font.render(score_text, True, "white"), (10, 20))
         pygame.display.flip()
+
+    
+    def reset_sprites(self):
+        self.bricks.empty()
+        self.moveables.empty()
+        self.ball = Ball()
+        self.paddle = Paddle()
+        self.moveables.add(self.ball, self.paddle)
+
