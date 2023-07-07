@@ -1,5 +1,6 @@
 from .config import *
-from .sprites import Paddle, Ball, BrickBreakable, BrickUnbreakable
+from .sounds import *
+from .sprites import *
 import sys
 import glob
 import pygame

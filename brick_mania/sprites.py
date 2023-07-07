@@ -5,7 +5,7 @@ import pygame
 class Paddle(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("assets/paddle.png").convert_alpha()
+        self.image = pygame.image.load("assets/img/paddle.png").convert_alpha()
         self.rect = self.image.get_rect(
             centerx=SCREEN_WIDTH / 2,
             y=SCREEN_HEIGHT - PADDLE_HEIGHT - 10
@@ -25,7 +25,7 @@ class Paddle(pygame.sprite.Sprite):
 class Ball(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.image = pygame.image.load("assets/ball.png").convert_alpha()
+        self.image = pygame.image.load("assets/img/ball.png").convert_alpha()
         self.rect = self.image.get_rect(
             centerx=SCREEN_WIDTH / 2,
             centery=SCREEN_HEIGHT * (2/3)
@@ -45,10 +45,10 @@ class Brick(pygame.sprite.Sprite):
 
 class BrickBreakable(Brick):
     def __init__(self, coordinates):
-        self.image = pygame.image.load("assets/brick_breakable.png").convert_alpha()
+        self.image = pygame.image.load("assets/img/brick_breakable.png").convert_alpha()
         super().__init__(coordinates)
 
 class BrickUnbreakable(Brick):
     def __init__(self, coordinates):
-        self.image = pygame.image.load("assets/brick_unbreakable.png").convert_alpha()
+        self.image = pygame.image.load("assets/img/brick_unbreakable.png").convert_alpha()
         super().__init__(coordinates)
