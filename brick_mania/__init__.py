@@ -68,6 +68,7 @@ class Game:
         # Collision with paddle
         ball_paddle_collision = pygame.sprite.collide_rect(self.ball, self.paddle)
         if ball_paddle_collision:
+            sound_collision_hard.play()
             constant_of_proportionality = (PADDLE_WIDTH / 2) / MAX_VELOCITY
             new_x_velocity = (self.ball.rect.centerx - self.paddle.rect.centerx) / constant_of_proportionality
             self.ball.x_velocity = new_x_velocity
@@ -85,13 +86,18 @@ class Game:
                 self.ball.x_velocity = -self.ball.x_velocity
 
             if brick_colliding.__class__.__name__ == "BrickBreakable":
+                sound_collision_soft.play()
                 brick_colliding.kill()
+            else:
+                sound_collision_hard.play()
 
         # With ceiling
         if self.ball.rect.top <= 0:
+            sound_collision_hard.play()
             self.ball.y_velocity = -self.ball.y_velocity
         # With walls
         if self.ball.rect.x <= 0 or self.ball.rect.right >= SCREEN_WIDTH:
+            sound_collision_hard.play()
             self.ball.x_velocity = -self.ball.x_velocity
 
 
