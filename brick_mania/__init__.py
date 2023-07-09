@@ -78,11 +78,11 @@ class Game:
         brick_colliding = pygame.sprite.spritecollideany(self.ball, self.bricks)
         if brick_colliding:
             # Ball is below or above brick
-            if self.ball.rect.top >= brick_colliding.rect.bottom-5 or self.ball.rect.bottom <= brick_colliding.rect.top+5:
+            if self.ball.rect.top >= brick_colliding.rect.bottom-10 or self.ball.rect.bottom <= brick_colliding.rect.top+10:
                 self.ball.y_velocity = -self.ball.y_velocity
 
             # Ball is on the side of brick
-            if self.ball.rect.right <= brick_colliding.rect.left+5 or self.ball.rect.left >= brick_colliding.rect.right-5:
+            if self.ball.rect.right <= brick_colliding.rect.left+10 or self.ball.rect.left >= brick_colliding.rect.right-10:
                 self.ball.x_velocity = -self.ball.x_velocity
 
             if brick_colliding.__class__.__name__ == "BrickBreakable":

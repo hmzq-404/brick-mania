@@ -1,7 +1,6 @@
 import pygame
 
 # Sound from Zapsplat.com
-sound_button_press = pygame.mixer.Sound("assets/sound/button_press.mp3")
 sound_collision_hard = pygame.mixer.Sound("assets/sound/collision_hard.mp3")
 sound_collision_soft = pygame.mixer.Sound("assets/sound/collision_soft.mp3")
 sound_game_lost = pygame.mixer.Sound("assets/sound/game_lost.mp3")
