@@ -1,5 +1,6 @@
 import pygame
 
+
 pygame.init()
 
 from brick_mania import Game
